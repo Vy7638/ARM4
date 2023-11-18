@@ -20,14 +20,15 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "spi.h"
+#include "i2c.h"
 /* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include "software_timer.h"
-#include "LED_7seg.h"
+#include "led_7seg.h"
 #include "button.h"
 #include "lcd.h"
 #include "picture.h"
-/* USER CODE BEGIN Includes */
-
+#include "ds3231.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,6 +45,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim2;
@@ -61,8 +64,8 @@ static void MX_TIM2_Init(void);
 static void MX_FSMC_Init(void);
 /* USER CODE BEGIN PFP */
 void system_init();
-void test_button();
-void test_lcd();
+void displayTime();
+void updateTime();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -101,6 +104,7 @@ int main(void)
   MX_TIM2_Init();
   MX_SPI1_Init();
   MX_FSMC_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
@@ -111,7 +115,8 @@ int main(void)
 	  while(!flag_timer2);
 	  flag_timer2 = 0;
 	  button_Scan();
-	  test_button();
+	  ds3231_ReadTime();
+	  displayTime();
 
     /* USER CODE END WHILE */
 
@@ -163,6 +168,10 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 }
+
+
+
+
 
 /**
   * @brief TIM2 Initialization Function
@@ -356,8 +365,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 void system_init(){
 	  HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, 0);
 	  HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, 0);
-	  HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 0);
 	  led7_init();
+	  button_init();
+	  lcd_init();
+	  ds3231_init();
 	  setTimer2(50);
 }
 void test_lcd(){
@@ -374,6 +385,24 @@ void test_button(){
 			lcd_ShowIntNum(140, 105, i, 2, BRED, WHITE, 32);
 		}
 	}
+}
+void updateTime(){
+	ds3231_Write(ADDRESS_YEAR, 23);
+	ds3231_Write(ADDRESS_MONTH, 10);
+	ds3231_Write(ADDRESS_DATE, 20);
+	ds3231_Write(ADDRESS_DAY, 6);
+	ds3231_Write(ADDRESS_HOUR, 20);
+	ds3231_Write(ADDRESS_MIN, 11);
+	ds3231_Write(ADDRESS_SEC, 23);
+}
+void displayTime(){
+	lcd_ShowIntNum(70, 100, ds3231_hours, 2, GREEN, BLACK, 24);
+	lcd_ShowIntNum(110, 100, ds3231_min, 2, GREEN, BLACK, 24);
+	lcd_ShowIntNum(150, 100, ds3231_sec, 2, GREEN, BLACK, 24);
+	lcd_ShowIntNum(20, 130, ds3231_day, 2, YELLOW, BLACK, 24);
+	lcd_ShowIntNum(70, 130, ds3231_date, 2, YELLOW, BLACK, 24);
+	lcd_ShowIntNum(110, 130, ds3231_month, 2, YELLOW, BLACK, 24);
+	lcd_ShowIntNum(150, 130, ds3231_year, 2, YELLOW, BLACK, 24);
 }
 /* USER CODE END 4 */
 
