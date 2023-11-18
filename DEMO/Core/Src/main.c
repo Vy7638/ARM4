@@ -107,7 +107,6 @@ int main(void)
   int red = 5;
   int yellow = 2;
   int green = 3;
-
   /* USER CODE BEGIN WHILE */
   while (1)
   {
@@ -312,7 +311,12 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if (htim->Instance == TIM2){
+		timerRun();
+	}
+	led7_Scan();
+}
 /* USER CODE END 4 */
 
 /**

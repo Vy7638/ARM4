@@ -14,5 +14,6 @@
 extern uint16_t flag_timer2;
 
 void setTimer2(uint16_t duration);
+void timerRun();
 
 #endif /* INC_SOFTWARE_TIMER_H_ */
