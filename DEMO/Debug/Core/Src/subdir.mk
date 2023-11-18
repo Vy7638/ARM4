@@ -7,6 +7,8 @@
 C_SRCS += \
 ../Core/Src/button.c \
 ../Core/Src/ds3231.c \
+../Core/Src/fsmc.c \
+../Core/Src/gpio.c \
 ../Core/Src/i2c.c \
 ../Core/Src/lcd.c \
 ../Core/Src/led_7seg.c \
@@ -19,11 +21,16 @@ C_SRCS += \
 ../Core/Src/syscalls.c \
 ../Core/Src/sysmem.c \
 ../Core/Src/system_stm32f4xx.c \
+../Core/Src/tim.c \
+../Core/Src/uart.c \
+../Core/Src/usart.c \
 ../Core/Src/utils.c 
 
 OBJS += \
 ./Core/Src/button.o \
 ./Core/Src/ds3231.o \
+./Core/Src/fsmc.o \
+./Core/Src/gpio.o \
 ./Core/Src/i2c.o \
 ./Core/Src/lcd.o \
 ./Core/Src/led_7seg.o \
@@ -36,11 +43,16 @@ OBJS += \
 ./Core/Src/syscalls.o \
 ./Core/Src/sysmem.o \
 ./Core/Src/system_stm32f4xx.o \
+./Core/Src/tim.o \
+./Core/Src/uart.o \
+./Core/Src/usart.o \
 ./Core/Src/utils.o 
 
 C_DEPS += \
 ./Core/Src/button.d \
 ./Core/Src/ds3231.d \
+./Core/Src/fsmc.d \
+./Core/Src/gpio.d \
 ./Core/Src/i2c.d \
 ./Core/Src/lcd.d \
 ./Core/Src/led_7seg.d \
@@ -53,6 +65,9 @@ C_DEPS += \
 ./Core/Src/syscalls.d \
 ./Core/Src/sysmem.d \
 ./Core/Src/system_stm32f4xx.d \
+./Core/Src/tim.d \
+./Core/Src/uart.d \
+./Core/Src/usart.d \
 ./Core/Src/utils.d 
 
 

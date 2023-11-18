@@ -14,6 +14,7 @@ SPI_HandleTypeDef hspi1;
   * @param None
   * @retval None
   */
+
 void MX_SPI1_Init(void)
 {
 
