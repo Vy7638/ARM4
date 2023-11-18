@@ -9,6 +9,11 @@
 
 SPI_HandleTypeDef hspi1;
 
+/**
+  * @brief SPI1 Initialization Function
+  * @param None
+  * @retval None
+  */
 void MX_SPI1_Init(void){
 
   /* USER CODE BEGIN SPI1_Init 0 */

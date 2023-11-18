@@ -20,16 +20,18 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "spi.h"
+/* Private includes ----------------------------------------------------------*/
 #include "software_timer.h"
 #include "LED_7seg.h"
-/* Private includes ----------------------------------------------------------*/
+#include "button.h"
+#include "lcd.h"
+#include "picture.h"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -42,9 +44,11 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
+SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim2;
+
+SRAM_HandleTypeDef hsram1;
 
 /* USER CODE BEGIN PV */
 
@@ -54,19 +58,16 @@ TIM_HandleTypeDef htim2;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_FSMC_Init(void);
 /* USER CODE BEGIN PFP */
-
+void system_init();
+void test_button();
+void test_lcd();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void system_init(){
-	  HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, 0);
-	  HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, 0);
-	  HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 0);
-	  led7_init();
-	  setTimer2(50);
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -99,45 +100,19 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
+  MX_FSMC_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  int red = 5;
-  int yellow = 2;
-  int green = 3;
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	    if (red <= 0 &&  green <= 0 && yellow <= 0){
-	        red = 5;
-	        green = 3;
-	        yellow = 2;
-	    }
-	    if (red > 0){
-	  	    HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, GPIO_PIN_SET);
-	  	    HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, GPIO_PIN_SET);
-	  	    HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, GPIO_PIN_RESET);
-	  	    red--;
-	    }
-	    else if (green > 0){
-	  	    HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, GPIO_PIN_SET);
-	  	    HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, GPIO_PIN_SET);
-	  	    HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, GPIO_PIN_RESET);
-	  	    green--;
-	   }
-	    else if (yellow > 0){
-	        HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, GPIO_PIN_SET);
-	        HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, GPIO_PIN_SET);
-	        HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, GPIO_PIN_RESET);
-	        yellow--;
-	    }
-		led7_SetDigit(1, 0, 0);
-		led7_SetDigit(5, 1, 0);
-		led7_SetDigit(4, 2, 0);
-		led7_SetDigit(7, 3, 0);
-	    setTimer2(1000);
+  while (1){
+	  while(!flag_timer2);
+	  flag_timer2 = 0;
+	  button_Scan();
+	  test_button();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -245,21 +220,21 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOG_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, LED_DEBUG_Pin|OUTPUT_Y0_Pin|OUTPUT_Y1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(INPUT_X1_GPIO_Port, INPUT_X1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, FSMC_RES_Pin|INPUT_X2_Pin|INPUT_X3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, INPUT_X2_Pin|INPUT_X3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, INPUT_X1_Pin|FSMC_BLK_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD_LATCH_GPIO_Port, LD_LATCH_Pin, GPIO_PIN_RESET);
@@ -274,25 +249,25 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : FSMC_RES_Pin INPUT_X2_Pin INPUT_X3_Pin */
+  GPIO_InitStruct.Pin = FSMC_RES_Pin|INPUT_X2_Pin|INPUT_X3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /*Configure GPIO pin : INPUT_X0_Pin */
   GPIO_InitStruct.Pin = INPUT_X0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(INPUT_X0_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : INPUT_X1_Pin */
-  GPIO_InitStruct.Pin = INPUT_X1_Pin;
+  /*Configure GPIO pins : INPUT_X1_Pin FSMC_BLK_Pin */
+  GPIO_InitStruct.Pin = INPUT_X1_Pin|FSMC_BLK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(INPUT_X1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : INPUT_X2_Pin INPUT_X3_Pin */
-  GPIO_InitStruct.Pin = INPUT_X2_Pin|INPUT_X3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD_LATCH_Pin */
   GPIO_InitStruct.Pin = LD_LATCH_Pin;
@@ -310,12 +285,95 @@ static void MX_GPIO_Init(void)
 
 }
 
+/* FSMC initialization function */
+static void MX_FSMC_Init(void)
+{
+
+  /* USER CODE BEGIN FSMC_Init 0 */
+
+  /* USER CODE END FSMC_Init 0 */
+
+  FSMC_NORSRAM_TimingTypeDef Timing = {0};
+  FSMC_NORSRAM_TimingTypeDef ExtTiming = {0};
+
+  /* USER CODE BEGIN FSMC_Init 1 */
+
+  /* USER CODE END FSMC_Init 1 */
+
+  /** Perform the SRAM1 memory initialization sequence
+  */
+  hsram1.Instance = FSMC_NORSRAM_DEVICE;
+  hsram1.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
+  /* hsram1.Init */
+  hsram1.Init.NSBank = FSMC_NORSRAM_BANK1;
+  hsram1.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
+  hsram1.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
+  hsram1.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_16;
+  hsram1.Init.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
+  hsram1.Init.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
+  hsram1.Init.WrapMode = FSMC_WRAP_MODE_DISABLE;
+  hsram1.Init.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
+  hsram1.Init.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
+  hsram1.Init.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
+  hsram1.Init.ExtendedMode = FSMC_EXTENDED_MODE_ENABLE;
+  hsram1.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
+  hsram1.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
+  hsram1.Init.PageSize = FSMC_PAGE_SIZE_NONE;
+  /* Timing */
+  Timing.AddressSetupTime = 0xf;
+  Timing.AddressHoldTime = 15;
+  Timing.DataSetupTime = 60;
+  Timing.BusTurnAroundDuration = 0;
+  Timing.CLKDivision = 16;
+  Timing.DataLatency = 17;
+  Timing.AccessMode = FSMC_ACCESS_MODE_A;
+  /* ExtTiming */
+  ExtTiming.AddressSetupTime = 8;
+  ExtTiming.AddressHoldTime = 15;
+  ExtTiming.DataSetupTime = 9;
+  ExtTiming.BusTurnAroundDuration = 0;
+  ExtTiming.CLKDivision = 16;
+  ExtTiming.DataLatency = 17;
+  ExtTiming.AccessMode = FSMC_ACCESS_MODE_A;
+
+  if (HAL_SRAM_Init(&hsram1, &Timing, &ExtTiming) != HAL_OK)
+  {
+    Error_Handler( );
+  }
+
+  /* USER CODE BEGIN FSMC_Init 2 */
+
+  /* USER CODE END FSMC_Init 2 */
+}
+
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if (htim->Instance == TIM2){
 		timerRun();
 	}
 	led7_Scan();
+}
+void system_init(){
+	  HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, 0);
+	  HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, 0);
+	  HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 0);
+	  led7_init();
+	  setTimer2(50);
+}
+void test_lcd(){
+	lcd_Fill(0, 0, 240, 20, BLUE);
+	lcd_StrCenter(0, 2, "Hello World !!!", RED, BLUE, 16, 1);
+	lcd_ShowStr(20, 30, "Test lcd screen", WHITE, RED, 24, 0);
+	lcd_DrawCircle(60, 120, GREEN, 40, 1);
+	lcd_DrawCircle(160, 120, BRED, 40, 0);
+	lcd_ShowPicture(80, 200, 90, 90, gImage_logo);
+}
+void test_button(){
+	for(int i = 0; i < 16; i++){
+		if(button_count[i] == 1){
+			lcd_ShowIntNum(140, 105, i, 2, BRED, WHITE, 32);
+		}
+	}
 }
 /* USER CODE END 4 */
 
