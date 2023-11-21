@@ -104,40 +104,47 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  int red = 5;
-  int yellow = 2;
-  int green = 3;
+  int red = 0;
+  int yellow = 0;
+  int green = 0;
+  led7_SetDigit(1, 0, 0);
+  led7_SetDigit(2, 1, 0);
+  led7_SetDigit(3, 2, 0);
+  led7_SetDigit(4, 3, 0);
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	    if (red <= 0 &&  green <= 0 && yellow <= 0){
+	  if (flag_timer2 == 1){
+		  flag_timer2 = 0;
+		  HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
+		  if (red <= 0 &&  green <= 0 && yellow <= 0){
 	        red = 5;
 	        green = 3;
 	        yellow = 2;
-	    }
-	    if (red > 0){
+		  }
+		  if (red > 0){
 	  	    HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, GPIO_PIN_SET);
 	  	    HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, GPIO_PIN_SET);
 	  	    HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, GPIO_PIN_RESET);
 	  	    red--;
-	    }
-	    else if (green > 0){
+		  }
+		  else if (green > 0){
 	  	    HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, GPIO_PIN_SET);
 	  	    HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, GPIO_PIN_SET);
 	  	    HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, GPIO_PIN_RESET);
 	  	    green--;
-	   }
-	    else if (yellow > 0){
+		  }
+		  else if (yellow > 0){
 	        HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, GPIO_PIN_SET);
 	        HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, GPIO_PIN_SET);
 	        HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, GPIO_PIN_RESET);
 	        yellow--;
-	    }
-		led7_SetDigit(1, 0, 0);
-		led7_SetDigit(5, 1, 0);
-		led7_SetDigit(4, 2, 0);
-		led7_SetDigit(7, 3, 0);
-	    setTimer2(1000);
+		  }
+		  setTimer2(1000);
+
+	  }
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

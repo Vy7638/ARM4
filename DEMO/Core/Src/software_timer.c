@@ -24,7 +24,7 @@ void timerRun(){
 		timer2_counter--;
 		if (timer2_counter == 0){
 			flag_timer2 = 1;
-			timer2_counter = timer2_MUL;
+			//timer2_counter = timer2_MUL;
 		}
 	}
 }
