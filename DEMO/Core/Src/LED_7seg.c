@@ -5,7 +5,7 @@
  *      Author: ADMIN
  */
 
-#include "led_7seg.h"
+#include <led_7seg.h>
 
 uint8_t led7seg[4] = {0, 1, 2, 3}; //4 index
 uint8_t arrayOfNum[10] = {0x03, 0x9f, 0x25, 0x0d, 0x99, 0x49, 0x41, 0x1f, 0x01, 0x09};// 9 numbers

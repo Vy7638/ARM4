@@ -12,8 +12,6 @@
 #include "stdlib.h"
 #include <string.h>
 
-
-
 #define DFT_SCAN_DIR  L2R_U2D
 
 //chinh huong

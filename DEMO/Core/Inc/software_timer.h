@@ -8,11 +8,14 @@
 #ifndef INC_SOFTWARE_TIMER_H_
 #define INC_SOFTWARE_TIMER_H_
 
-#include "main.h"
+#include "led_7seg.h"
+#include "tim.h"
 
+//extern uint16_t flag_timer1;
 extern uint16_t flag_timer2;
 
+void timer_init();
+//void setTimer1(uint16_t duration);
 void setTimer2(uint16_t duration);
-void timerRun();
 
 #endif /* INC_SOFTWARE_TIMER_H_ */

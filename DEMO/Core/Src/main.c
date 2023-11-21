@@ -59,6 +59,10 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void system_init();
+void test_led();
+void test_7seg();
+void test_lcd();
+void test_button();
 void displayTime();
 void updateTime();
 /* USER CODE END PFP */
@@ -72,8 +76,7 @@ void updateTime();
   * @brief  The application entry point.
   * @retval int
   */
-int main(void)
-{
+int main(void){
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -102,7 +105,10 @@ int main(void)
   MX_I2C1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start_IT(&htim2);
+
+  system_init();
+  updateTime();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -110,10 +116,12 @@ int main(void)
   while (1){
 	  while(!flag_timer2);
 	  flag_timer2 = 0;
+	  test_led();
 	  button_Scan();
+	  test_lcd();
 	  ds3231_ReadTime();
 	  displayTime();
-	  test_lcd();
+	  //test_button();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -166,27 +174,30 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if (htim->Instance == TIM2){
-		timerRun();
-	}
-	led7_Scan();
-}
 void system_init(){
 	  HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, 0);
 	  HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, 0);
+	  HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 0);
+	  timer_init();
 	  led7_init();
 	  button_init();
 	  lcd_init();
 	  ds3231_init();
 	  setTimer2(50);
 }
+void test_led(){
+	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
+}
+void test_7seg(){
+	led7_SetDigit(1, 0, 0);
+	led7_SetDigit(2, 1, 0);
+	led7_SetDigit(3, 2, 0);
+	led7_SetDigit(4, 3, 0);
+}
 void test_lcd(){
 	lcd_Fill(0, 0, 240, 20, BLUE);
 	lcd_StrCenter(0, 2, "Hello World !!!", RED, BLUE, 16, 1);
 	lcd_ShowStr(20, 30, "Test lcd screen", WHITE, RED, 24, 0);
-	lcd_DrawCircle(60, 120, GREEN, 40, 1);
-	lcd_DrawCircle(160, 120, BRED, 40, 0);
 	lcd_ShowPicture(80, 200, 90, 90, gImage_logo);
 }
 void test_button(){
@@ -198,12 +209,12 @@ void test_button(){
 }
 void updateTime(){
 	ds3231_Write(ADDRESS_YEAR, 23);
-	ds3231_Write(ADDRESS_MONTH, 10);
-	ds3231_Write(ADDRESS_DATE, 20);
+	ds3231_Write(ADDRESS_MONTH, 9);
+	ds3231_Write(ADDRESS_DATE, 15);
 	ds3231_Write(ADDRESS_DAY, 6);
-	ds3231_Write(ADDRESS_HOUR, 20);
-	ds3231_Write(ADDRESS_MIN, 11);
-	ds3231_Write(ADDRESS_SEC, 23);
+	ds3231_Write(ADDRESS_HOUR, 21);
+	ds3231_Write(ADDRESS_MIN, 22);
+	ds3231_Write(ADDRESS_SEC, 30);
 }
 void displayTime(){
 	lcd_ShowIntNum(70, 100, ds3231_hours, 2, GREEN, BLACK, 24);
