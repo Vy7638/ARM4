@@ -1,4 +1,4 @@
-Core/Src/led_7seg.o: ../Core/Src/led_7seg.c ../Core/Inc/led_7seg.h \
+Core/Src/LED_7seg.o: ../Core/Src/LED_7seg.c ../Core/Inc/led_7seg.h \
  ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \

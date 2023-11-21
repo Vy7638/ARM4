@@ -5,13 +5,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Core/Src/LED_7seg.c \
 ../Core/Src/button.c \
 ../Core/Src/ds3231.c \
 ../Core/Src/fsmc.c \
 ../Core/Src/gpio.c \
 ../Core/Src/i2c.c \
 ../Core/Src/lcd.c \
-../Core/Src/led_7seg.c \
 ../Core/Src/main.c \
 ../Core/Src/picture.c \
 ../Core/Src/software_timer.c \
@@ -27,13 +27,13 @@ C_SRCS += \
 ../Core/Src/utils.c 
 
 OBJS += \
+./Core/Src/LED_7seg.o \
 ./Core/Src/button.o \
 ./Core/Src/ds3231.o \
 ./Core/Src/fsmc.o \
 ./Core/Src/gpio.o \
 ./Core/Src/i2c.o \
 ./Core/Src/lcd.o \
-./Core/Src/led_7seg.o \
 ./Core/Src/main.o \
 ./Core/Src/picture.o \
 ./Core/Src/software_timer.o \
@@ -49,13 +49,13 @@ OBJS += \
 ./Core/Src/utils.o 
 
 C_DEPS += \
+./Core/Src/LED_7seg.d \
 ./Core/Src/button.d \
 ./Core/Src/ds3231.d \
 ./Core/Src/fsmc.d \
 ./Core/Src/gpio.d \
 ./Core/Src/i2c.d \
 ./Core/Src/lcd.d \
-./Core/Src/led_7seg.d \
 ./Core/Src/main.d \
 ./Core/Src/picture.d \
 ./Core/Src/software_timer.d \

@@ -113,7 +113,7 @@ int main(void)
 	  button_Scan();
 	  ds3231_ReadTime();
 	  displayTime();
-
+	  test_lcd();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
