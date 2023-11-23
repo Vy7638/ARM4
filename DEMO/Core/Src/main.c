@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "global.h"
 #include "tim.h"
 #include "i2c.h"
 #include "gpio.h"
@@ -59,6 +60,7 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void system_init();
+void traffic();
 void test_led();
 void test_7seg();
 void test_lcd();
@@ -69,7 +71,10 @@ void updateTime();
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int counter_red = 5;
+int counter_green = 3;
+int counter_yellow = 2;
+int counter = 0;
 /* USER CODE END 0 */
 
 /**
@@ -115,6 +120,7 @@ int main(void){
   while (1){
 	  while(!flag_timer2);
 	  flag_timer2 = 0;
+	  traffic();
 	  //test_led();
 	  //button_Scan();
 	  //test_lcd();
@@ -184,7 +190,48 @@ void system_init(){
 	  //ds3231_init();
 	  setTimer2(50);
 }
-
+void traffic(){
+  if (++counter % 20 == 0){
+	  counter = 0;
+	switch (status) {
+		case red:
+			  HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, 0);
+			  HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, 0);
+			  HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 1);
+			counter_red--;
+			if (counter_red <= 0){
+				status = green;
+				counter_green = 3;
+			}
+			break;
+		case green:
+			  HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, 1);
+			  HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, 0);
+			  HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 0);
+			counter_green--;
+			if (counter_green <= 0){
+				status = yellow;
+				counter_yellow = 2;
+			}
+			break;
+		case yellow:
+			  HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, 0);
+			  HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, 1);
+			  HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 0);
+			  counter_yellow--;
+			  if (counter_yellow <= 0){
+				status = red;
+				counter_red = 5;
+			}
+			break;
+		default:
+			counter_red = 5;
+			counter_green = 3;
+			counter_yellow = 2;
+			break;
+	}
+  }
+}
 void test_led(){
 	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 }
