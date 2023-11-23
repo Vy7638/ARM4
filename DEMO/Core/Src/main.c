@@ -105,9 +105,8 @@ int main(void){
   MX_I2C1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
   system_init();
-  updateTime();
+  //updateTime();
 
   /* USER CODE END 2 */
 
@@ -116,11 +115,11 @@ int main(void){
   while (1){
 	  while(!flag_timer2);
 	  flag_timer2 = 0;
-	  test_led();
-	  button_Scan();
-	  test_lcd();
-	  ds3231_ReadTime();
-	  displayTime();
+	  //test_led();
+	  //button_Scan();
+	  //test_lcd();
+	  //ds3231_ReadTime();
+	  //displayTime();
 	  //test_button();
     /* USER CODE END WHILE */
 
@@ -185,6 +184,7 @@ void system_init(){
 	  //ds3231_init();
 	  setTimer2(50);
 }
+
 void test_led(){
 	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 }
