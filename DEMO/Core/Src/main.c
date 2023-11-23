@@ -182,7 +182,7 @@ void system_init(){
 	  led7_init();
 	  button_init();
 	  lcd_init();
-	  ds3231_init();
+	  //ds3231_init();
 	  setTimer2(50);
 }
 void test_led(){
