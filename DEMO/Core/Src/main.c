@@ -59,6 +59,7 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void system_init();
+void auto_timer();
 void test_led();
 void test_7seg();
 void test_lcd();
@@ -69,7 +70,10 @@ void updateTime();
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int counter = 0;
+int hour = 12;
+int min = 34;
+int sec = 0;
 /* USER CODE END 0 */
 
 /**
@@ -115,6 +119,8 @@ int main(void){
   while (1){
 	  while(!flag_timer2);
 	  flag_timer2 = 0;
+	  auto_timer();
+	  test_7seg();
 	  //test_led();
 	  //button_Scan();
 	  //test_lcd();
@@ -184,7 +190,22 @@ void system_init(){
 	  //ds3231_init();
 	  setTimer2(50);
 }
-
+void auto_timer(){
+	if (++counter % 20 == 0){
+		counter = 0;
+		if (sec >= 60){
+			min++;
+			sec = 0;
+		}
+		if (min >= 60){
+			hour++;
+			min = 0;
+		}
+		if (hour >= 24){
+			hour = 0;
+		}
+	}
+}
 void test_led(){
 	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 }
@@ -192,7 +213,7 @@ void test_7seg(){
 	led7_SetDigit(1, 0, 0);
 	led7_SetDigit(2, 1, 0);
 	led7_SetDigit(3, 2, 0);
-	led7_SetDigit(4, 3, 0);
+	led7_SetDigit(0, 3, 0);
 }
 void test_lcd(){
 	lcd_Fill(0, 0, 240, 20, BLUE);
