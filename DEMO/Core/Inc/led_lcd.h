@@ -8,6 +8,7 @@
 #ifndef INC_LED_LCD_H_
 #define INC_LED_LCD_H_
 
+#include "global.h"
 #include "lcd.h"
 
 void lcdRedGreen();

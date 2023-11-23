@@ -65,6 +65,7 @@ void system_init();
 void input_process();
 void test_led();
 void test_7seg();
+void test_lcdTraffic();
 void test_lcd();
 void test_button();
 void displayTime();
@@ -119,6 +120,7 @@ int main(void){
   while (1){
 	  while(!flag_timer2);
 	  flag_timer2 = 0;
+	  counter++;
 	  test_led();
 	  button_Scan();
 	  //test_lcd();
@@ -128,7 +130,7 @@ int main(void){
 	  input_process();
 	  fsm_auto();
 	  fsm_manual();
-
+	  //test_lcdTraffic();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -199,85 +201,71 @@ void test_led(){
 void input_process(){
 	switch (status) {
 		case RED_GREEN:
-			if (button_count[3] == 1){
-				button_count[3] = 0;
+			if (button_count[0] == 1){
 				status = RED_MANUAL;
 				tempRed = timerRed;
 			}
 			break;
 		case RED_AMBER:
-			if (button_count[3] == 1){
-				button_count[3] = 0;
+			if (button_count[0] == 1){
 				status = RED_MANUAL;
 				tempRed = timerRed;
 			}
 			break;
 		case GREEN_RED:
-			if (button_count[3] == 1){
-				button_count[3] = 0;
+			if (button_count[0] == 1){
 				status = RED_MANUAL;
 				tempRed = timerRed;
 			}
 			break;
 		case AMBER_RED:
-			if (button_count[3] == 1){
-				button_count[3] = 0;
+			if (button_count[0] == 1){
 				status = RED_MANUAL;
 				tempRed = timerRed;
 			}
 			break;
 		case INIT:
-			if (button_count[3] == 1){
-				button_count[3] = 0;
+			if (button_count[0] == 1){
 				status = RED_MANUAL;
 				tempRed = timerRed;
 			}
 			break;
 		case RED_MANUAL:
-			if (button_count[3] == 1){
-				button_count[3] = 0;
+			if (button_count[0] == 1){
 				status = AMBER_MANUAL;
 				tempAmber = timerAmber;
 			}
-			if (button_count[6] == 1){
-				button_count[6] = 0;
+			if (button_count[1] == 1){
 				tempRed++;
 			}
-			if (button_count[9] == 1){
-				button_count[9] = 0;
+			if (button_count[2] == 1){
 				timerRed = tempRed;
 			}
 			break;
 		case AMBER_MANUAL:
-			if (button_count[3] == 1){
-				button_count[3] = 0;
+			if (button_count[0] == 1){
 				status = GREEN_MANUAL;
 				tempGreen = timerGreen;
 			}
-			if (button_count[6] == 1){
-				button_count[6] = 0;
+			if (button_count[1] == 1){
 				tempAmber++;
 			}
-			if (button_count[9] == 1){
-				button_count[9] = 0;
+			if (button_count[2] == 1){
 				timerAmber= tempAmber;
 			}
 			break;
 		case GREEN_MANUAL:
-			if (button_count[3] == 1){
-				button_count[3] = 0;
+			if (button_count[0] == 1){
 				status = RED_GREEN;
 				if (timerRed != timerAmber + timerGreen){
 					timerRed = timerAmber + timerGreen;
 				}
 				fsm_auto_init();
 			}
-			if (button_count[6] == 1){
-				button_count[6] = 0;
+			if (button_count[1] == 1){
 				tempGreen++;
 			}
-			if (button_count[9] == 1){
-				button_count[9] = 0;
+			if (button_count[2] == 1){
 				timerGreen = tempGreen;
 			}
 			break;
@@ -285,7 +273,14 @@ void input_process(){
 			break;
 	}
 }
-
+void test_lcdTraffic(){
+	lcd_DrawCircle(40, 100, GREEN, 20, 1);
+	lcd_DrawCircle(40, 140, YELLOW, 20, 1);
+	lcd_DrawCircle(40, 180, RED, 20, 1);
+	lcd_DrawCircle(160, 50, GREEN, 20, 1);
+	lcd_DrawCircle(120, 50, YELLOW, 20, 1);
+	lcd_DrawCircle(80, 50, RED, 20, 1);
+}
 void test_7seg(){
 	led7_SetDigit(1, 0, 0);
 	led7_SetDigit(2, 1, 0);

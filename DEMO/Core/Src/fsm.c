@@ -20,6 +20,8 @@ void fsm_auto_init(){
 }
 
 void fsm_auto(){
+  if (counter % 20 == 0){
+	  counter = 0;
 	switch (status) {
 		case RED_GREEN:
 			lcd_Clear(WHITE);
@@ -64,6 +66,7 @@ void fsm_auto(){
 		default:
 			break;
 	}
+  }
 }
 
 void fsm_manual(){
@@ -71,21 +74,18 @@ void fsm_manual(){
 		case RED_MANUAL:
 			mode = 2;
 			temp = tempRed;
-			lcd_Clear(WHITE);
 			blinkyRed();
 			showMode();
 			break;
 		case AMBER_MANUAL:
 			mode = 3;
 			temp = tempAmber;
-			lcd_Clear(WHITE);
 			blinkyAmber();
 			showMode();
 			break;
 		case GREEN_MANUAL:
 			mode = 4;
 			temp = tempGreen;
-			lcd_Clear(WHITE);
 			blinkyGreen();
 			showMode();
 			break;

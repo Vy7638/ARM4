@@ -31,4 +31,6 @@ int tempGreen;
 int mode;
 int temp;
 
+extern int counter;
+
 #endif /* INC_GLOBAL_H_ */

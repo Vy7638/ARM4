@@ -12,3 +12,5 @@ int status = 0;
 timerRed = 5;
 timerAmber = 2;
 timerGreen = 3;
+
+int counter = 0;
