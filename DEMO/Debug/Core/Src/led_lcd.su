@@ -1,0 +1,8 @@
+led_lcd.c:10:6:lcdRedGreen	4	static
+led_lcd.c:13:6:lcdRedAmber	4	static
+led_lcd.c:16:6:lcdGreenRed	4	static
+led_lcd.c:19:6:lcdAmberRed	4	static
+led_lcd.c:22:6:blinkyRed	4	static
+led_lcd.c:25:6:blinkyAmber	4	static
+led_lcd.c:28:6:blinkyGreen	4	static
+led_lcd.c:31:6:showMode	4	static

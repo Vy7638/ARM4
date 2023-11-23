@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "global.h"
 #include "tim.h"
 #include "i2c.h"
 #include "gpio.h"
@@ -28,6 +29,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "software_timer.h"
+#include "fsm.h"
+#include "led_lcd.h"
 #include "led_7seg.h"
 #include "button.h"
 #include "lcd.h"
@@ -59,6 +62,7 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void system_init();
+void input_process();
 void test_led();
 void test_7seg();
 void test_lcd();
@@ -115,12 +119,16 @@ int main(void){
   while (1){
 	  while(!flag_timer2);
 	  flag_timer2 = 0;
-	  //test_led();
-	  //button_Scan();
+	  test_led();
+	  button_Scan();
 	  //test_lcd();
 	  //ds3231_ReadTime();
 	  //displayTime();
 	  //test_button();
+	  input_process();
+	  fsm_auto();
+	  fsm_manual();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -188,6 +196,96 @@ void system_init(){
 void test_led(){
 	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 }
+void input_process(){
+	switch (status) {
+		case RED_GREEN:
+			if (button_count[3] == 1){
+				button_count[3] = 0;
+				status = RED_MANUAL;
+				tempRed = timerRed;
+			}
+			break;
+		case RED_AMBER:
+			if (button_count[3] == 1){
+				button_count[3] = 0;
+				status = RED_MANUAL;
+				tempRed = timerRed;
+			}
+			break;
+		case GREEN_RED:
+			if (button_count[3] == 1){
+				button_count[3] = 0;
+				status = RED_MANUAL;
+				tempRed = timerRed;
+			}
+			break;
+		case AMBER_RED:
+			if (button_count[3] == 1){
+				button_count[3] = 0;
+				status = RED_MANUAL;
+				tempRed = timerRed;
+			}
+			break;
+		case INIT:
+			if (button_count[3] == 1){
+				button_count[3] = 0;
+				status = RED_MANUAL;
+				tempRed = timerRed;
+			}
+			break;
+		case RED_MANUAL:
+			if (button_count[3] == 1){
+				button_count[3] = 0;
+				status = AMBER_MANUAL;
+				tempAmber = timerAmber;
+			}
+			if (button_count[6] == 1){
+				button_count[6] = 0;
+				tempRed++;
+			}
+			if (button_count[9] == 1){
+				button_count[9] = 0;
+				timerRed = tempRed;
+			}
+			break;
+		case AMBER_MANUAL:
+			if (button_count[3] == 1){
+				button_count[3] = 0;
+				status = GREEN_MANUAL;
+				tempGreen = timerGreen;
+			}
+			if (button_count[6] == 1){
+				button_count[6] = 0;
+				tempAmber++;
+			}
+			if (button_count[9] == 1){
+				button_count[9] = 0;
+				timerAmber= tempAmber;
+			}
+			break;
+		case GREEN_MANUAL:
+			if (button_count[3] == 1){
+				button_count[3] = 0;
+				status = RED_GREEN;
+				if (timerRed != timerAmber + timerGreen){
+					timerRed = timerAmber + timerGreen;
+				}
+				fsm_auto_init();
+			}
+			if (button_count[6] == 1){
+				button_count[6] = 0;
+				tempGreen++;
+			}
+			if (button_count[9] == 1){
+				button_count[9] = 0;
+				timerGreen = tempGreen;
+			}
+			break;
+		default:
+			break;
+	}
+}
+
 void test_7seg(){
 	led7_SetDigit(1, 0, 0);
 	led7_SetDigit(2, 1, 0);
