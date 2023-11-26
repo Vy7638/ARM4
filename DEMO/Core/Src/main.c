@@ -72,6 +72,7 @@ void displayTime();
 void updateTime();
 void blinky_colon();
 void show_led();
+void shift_led();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -80,6 +81,7 @@ int counter = 0;
 int hour = 12;
 int min = 56;
 int sec = 50;
+int arr[4] = {1,2,3,4};
 /* USER CODE END 0 */
 
 /**
@@ -127,10 +129,9 @@ int main(void)
 	  while(!flag_timer2);
 	  flag_timer2 = 0;
 	  counter++;
-	  auto_timer();
 	  blinky_colon();
-	  show_led();
-	  //test_7seg();
+	  shift_led();
+	  test_7seg();
 	  //test_led();
 	  //button_Scan();
 	  //test_lcd();
@@ -200,6 +201,16 @@ void system_init(){
 	  //ds3231_init();
 	  setTimer2(50);
 }
+void shift_led(){
+	if (counter % 20 == 0){
+		counter = 0;
+		int temp = arr[3];
+		for (int i = 3; i > 0; i--){
+			arr[i] = arr[i - 1];
+		}
+		arr[0] = temp;
+	}
+}
 void auto_timer(){
 	if (counter % 20 == 0){
 		counter = 0;
@@ -234,10 +245,10 @@ void test_led(){
 	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 }
 void test_7seg(){
-	led7_SetDigit(1, 0, 0);
-	led7_SetDigit(2, 1, 0);
-	led7_SetDigit(3, 2, 0);
-	led7_SetDigit(0, 3, 0);
+	led7_SetDigit(arr[0], 0, 0);
+	led7_SetDigit(arr[1], 1, 0);
+	led7_SetDigit(arr[2], 2, 0);
+	led7_SetDigit(arr[3], 3, 0);
 }
 void test_lcd(){
 	lcd_Fill(0, 0, 240, 20, BLUE);
