@@ -117,7 +117,7 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   system_init();
-  //updateTime();
+  updateTime();
 
   /* USER CODE END 2 */
 
@@ -130,8 +130,8 @@ int main(void)
 	  button_Scan();
 	  test_lcd();
 	  test_7seg();
-	  //ds3231_ReadTime();
-	  //displayTime();
+	  ds3231_ReadTime();
+	  displayTime();
 	  test_button();
     /* USER CODE END WHILE */
 
@@ -184,9 +184,6 @@ void SystemClock_Config(void)
   }
 }
 
-
-
-
 /* USER CODE BEGIN 4 */
 void system_init(){
 	  HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, 0);
@@ -196,7 +193,7 @@ void system_init(){
 	  led7_init();
 	  button_init();
 	  lcd_init();
-	  //ds3231_init();
+	  ds3231_init();
 	  setTimer2(50);
 }
 
@@ -224,9 +221,9 @@ void test_button(){
 }
 void updateTime(){
 	ds3231_Write(ADDRESS_YEAR, 23);
-	ds3231_Write(ADDRESS_MONTH, 9);
-	ds3231_Write(ADDRESS_DATE, 15);
-	ds3231_Write(ADDRESS_DAY, 6);
+	ds3231_Write(ADDRESS_MONTH, 11);
+	ds3231_Write(ADDRESS_DATE, 27);
+	ds3231_Write(ADDRESS_DAY, 2);
 	ds3231_Write(ADDRESS_HOUR, 21);
 	ds3231_Write(ADDRESS_MIN, 22);
 	ds3231_Write(ADDRESS_SEC, 30);
