@@ -79,7 +79,7 @@ void show_led();
 int counter = 0;
 int hour = 12;
 int min = 56;
-int sec = 0;
+int sec = 50;
 /* USER CODE END 0 */
 
 /**
@@ -203,6 +203,7 @@ void system_init(){
 void auto_timer(){
 	if (counter % 20 == 0){
 		counter = 0;
+		sec++;
 		if (sec >= 60){
 			min++;
 			sec = 0;
