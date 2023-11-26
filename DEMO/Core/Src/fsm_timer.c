@@ -140,6 +140,7 @@ void input_process(){
 	}
 }
 void fsm(){
+	counter++;
 	show_mode();
 	switch (status) {
 		case NORMAL:
@@ -147,7 +148,6 @@ void fsm(){
 			displayTime();
 			break;
 		case MANUAL:
-			counter++;
 			if (counter > 5){
 				blinky_time();
 			}
@@ -159,7 +159,6 @@ void fsm(){
 			}
 			break;
 		case TIMER:
-			counter++;
 			if (counter > 5){
 				blinky_time();
 			}
@@ -177,7 +176,7 @@ void fsm(){
 			else {
 				lcd_Clear(RED);
 			}
-			if (counter == 10){
+			if (counter >= 10){
 				counter = 0;
 				status = NORMAL;
 			}
