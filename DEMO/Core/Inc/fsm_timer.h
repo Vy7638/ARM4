@@ -13,6 +13,7 @@
 #include "button.h"
 #include "lcd.h"
 
+void alarm();
 void input_process();
 void fsm();
 void sub_fsm();

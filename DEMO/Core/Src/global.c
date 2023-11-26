@@ -9,3 +9,4 @@
 
 int status = 1;
 int subStatus = 11;
+int flag = 0;

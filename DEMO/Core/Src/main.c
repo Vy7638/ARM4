@@ -126,6 +126,7 @@ int main(void)
 	  flag_timer2 = 0;
 	  test_led();
 	  button_Scan();
+	  alarm();
 	  input_process();
 	  fsm();
 

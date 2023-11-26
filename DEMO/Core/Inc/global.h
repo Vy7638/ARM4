@@ -8,6 +8,7 @@
 #ifndef INC_GLOBAL_H_
 #define INC_GLOBAL_H_
 
+#define ALARM	0
 #define NORMAL 	1
 #define MANUAL 	2
 #define TIMER	3
@@ -30,6 +31,5 @@ int alarm_date;
 int alarm_day;
 int alarm_month;
 int alarm_year;
-
 
 #endif /* INC_GLOBAL_H_ */

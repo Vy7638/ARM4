@@ -8,7 +8,12 @@
 #include "fsm_timer.h"
 
 int counter = 0;
-
+void alarm(){
+	if (ds3231_year == alarm_year && ds3231_month == alarm_month && ds3231_date == alarm_date && ds3231_day == alarm_day
+		&& ds3231_hours == alarm_hours && ds3231_min == alarm_min && ds3231_sec == alarm_sec){
+		status = ALARM;
+	}
+}
 void sw_fsm(){
 	switch (subStatus) {
 		case YEAR_C:
@@ -163,6 +168,18 @@ void fsm(){
 			}
 			if (counter >= 10){
 				counter  = 0;
+			}
+			break;
+		case ALARM:
+			if (counter > 5){
+				lcd_Clear(WHITE);
+			}
+			else {
+				lcd_Clear(RED);
+			}
+			if (counter == 10){
+				counter = 0;
+				status = NORMAL;
 			}
 			break;
 		default:
