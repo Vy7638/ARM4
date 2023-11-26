@@ -24,12 +24,12 @@
 extern int status;
 extern int subStatus;
 
-int alarm_hours;
-int alarm_min;
-int alarm_sec;
-int alarm_date;
-int alarm_day;
-int alarm_month;
-int alarm_year;
+extern int alarm_hours;
+extern int alarm_min;
+extern int alarm_sec;
+extern int alarm_date;
+extern int alarm_day;
+extern int alarm_month;
+extern int alarm_year;
 
 #endif /* INC_GLOBAL_H_ */
