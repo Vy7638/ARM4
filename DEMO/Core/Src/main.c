@@ -19,12 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "tim.h"
-#include "i2c.h"
-#include "gpio.h"
-#include "spi.h"
-#include "fsmc.h"
-#include "usart.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "software_timer.h"
@@ -50,6 +45,15 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+
+SPI_HandleTypeDef hspi1;
+
+TIM_HandleTypeDef htim2;
+
+UART_HandleTypeDef huart1;
+
+SRAM_HandleTypeDef hsram1;
 
 /* USER CODE BEGIN PV */
 
@@ -66,13 +70,15 @@ void test_lcd();
 void test_button();
 void displayTime();
 void updateTime();
+void blinky_colon();
+void show_led();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 int counter = 0;
 int hour = 12;
-int min = 34;
+int min = 56;
 int sec = 0;
 /* USER CODE END 0 */
 
@@ -80,7 +86,8 @@ int sec = 0;
   * @brief  The application entry point.
   * @retval int
   */
-int main(void){
+int main(void)
+{
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -119,8 +126,11 @@ int main(void){
   while (1){
 	  while(!flag_timer2);
 	  flag_timer2 = 0;
+	  counter++;
 	  auto_timer();
-	  test_7seg();
+	  blinky_colon();
+	  show_led();
+	  //test_7seg();
 	  //test_led();
 	  //button_Scan();
 	  //test_lcd();
@@ -156,7 +166,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 168;
+  RCC_OscInitStruct.PLL.PLLN = 84;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -169,10 +179,10 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -191,7 +201,7 @@ void system_init(){
 	  setTimer2(50);
 }
 void auto_timer(){
-	if (++counter % 20 == 0){
+	if (counter % 20 == 0){
 		counter = 0;
 		if (sec >= 60){
 			min++;
@@ -205,6 +215,19 @@ void auto_timer(){
 			hour = 0;
 		}
 	}
+}
+void blinky_colon(){
+	if (counter >  10){
+		led7_SetColon(1);
+	}
+	else led7_SetColon(0);
+}
+
+void show_led(){
+	led7_SetDigit(hour/10, 0, 0);
+	led7_SetDigit(hour%10, 1, 0);
+	led7_SetDigit(min/10, 2, 0);
+	led7_SetDigit(min%10, 3, 0);
 }
 void test_led(){
 	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
