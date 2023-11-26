@@ -1,0 +1,4 @@
+fsm_timer.c:12:6:sw_fsm	8	static
+fsm_timer.c:44:6:sub_fsm	4	static
+fsm_timer.c:98:6:input_process	8	static
+fsm_timer.c:137:6:fsm	8	static

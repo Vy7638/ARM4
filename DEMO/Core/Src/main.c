@@ -25,7 +25,7 @@
 #include "usart.h"
 #include "tim.h"
 #include "spi.h"
-
+#include "global.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "software_timer.h"
@@ -35,6 +35,7 @@
 #include "picture.h"
 #include "ds3231.h"
 #include "uart.h"
+#include "fsm_timer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -73,8 +74,6 @@ void test_led();
 void test_7seg();
 void test_lcd();
 void test_button();
-void displayTime();
-void updateTime();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -117,7 +116,6 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   system_init();
-  updateTime();
 
   /* USER CODE END 2 */
 
@@ -128,11 +126,10 @@ int main(void)
 	  flag_timer2 = 0;
 	  test_led();
 	  button_Scan();
-	  test_lcd();
-	  test_7seg();
-	  ds3231_ReadTime();
-	  displayTime();
-	  test_button();
+	  input_process();
+	  fsm();
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -207,6 +204,7 @@ void test_7seg(){
 	led7_SetDigit(4, 3, 0);
 }
 void test_lcd(){
+
 	lcd_Fill(0, 0, 240, 20, BLUE);
 	lcd_StrCenter(0, 2, "Hello World !!!", RED, BLUE, 16, 1);
 	lcd_ShowStr(20, 30, "Test lcd screen", WHITE, RED, 24, 0);
@@ -219,24 +217,8 @@ void test_button(){
 		}
 	}
 }
-void updateTime(){
-	ds3231_Write(ADDRESS_YEAR, 23);
-	ds3231_Write(ADDRESS_MONTH, 11);
-	ds3231_Write(ADDRESS_DATE, 27);
-	ds3231_Write(ADDRESS_DAY, 2);
-	ds3231_Write(ADDRESS_HOUR, 21);
-	ds3231_Write(ADDRESS_MIN, 22);
-	ds3231_Write(ADDRESS_SEC, 30);
-}
-void displayTime(){
-	lcd_ShowIntNum(70, 100, ds3231_hours, 2, GREEN, BLACK, 24);
-	lcd_ShowIntNum(110, 100, ds3231_min, 2, GREEN, BLACK, 24);
-	lcd_ShowIntNum(150, 100, ds3231_sec, 2, GREEN, BLACK, 24);
-	lcd_ShowIntNum(20, 130, ds3231_day, 2, YELLOW, BLACK, 24);
-	lcd_ShowIntNum(70, 130, ds3231_date, 2, YELLOW, BLACK, 24);
-	lcd_ShowIntNum(110, 130, ds3231_month, 2, YELLOW, BLACK, 24);
-	lcd_ShowIntNum(150, 130, ds3231_year, 2, YELLOW, BLACK, 24);
-}
+
+
 /* USER CODE END 4 */
 
 /**

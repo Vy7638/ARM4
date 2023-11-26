@@ -8,7 +8,10 @@ C_SRCS += \
 ../Core/Src/LED_7seg.c \
 ../Core/Src/button.c \
 ../Core/Src/ds3231.c \
+../Core/Src/fsm_timer.c \
 ../Core/Src/fsmc.c \
+../Core/Src/function.c \
+../Core/Src/global.c \
 ../Core/Src/gpio.c \
 ../Core/Src/i2c.c \
 ../Core/Src/lcd.c \
@@ -30,7 +33,10 @@ OBJS += \
 ./Core/Src/LED_7seg.o \
 ./Core/Src/button.o \
 ./Core/Src/ds3231.o \
+./Core/Src/fsm_timer.o \
 ./Core/Src/fsmc.o \
+./Core/Src/function.o \
+./Core/Src/global.o \
 ./Core/Src/gpio.o \
 ./Core/Src/i2c.o \
 ./Core/Src/lcd.o \
@@ -52,7 +58,10 @@ C_DEPS += \
 ./Core/Src/LED_7seg.d \
 ./Core/Src/button.d \
 ./Core/Src/ds3231.d \
+./Core/Src/fsm_timer.d \
 ./Core/Src/fsmc.d \
+./Core/Src/function.d \
+./Core/Src/global.d \
 ./Core/Src/gpio.d \
 ./Core/Src/i2c.d \
 ./Core/Src/lcd.d \
