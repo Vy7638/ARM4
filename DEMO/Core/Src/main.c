@@ -198,6 +198,7 @@ void system_init(){
 void test_led(){
 	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 }
+
 void input_process(){
 	switch (status) {
 		case RED_GREEN:
