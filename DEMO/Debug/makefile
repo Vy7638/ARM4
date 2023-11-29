@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (9-2020-q2-update)
+# Toolchain: GNU Tools for STM32 (11.3.rel1)
 ################################################################################
 
 -include ../makefile.init
@@ -12,7 +12,6 @@ RM := rm -rf
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
--include subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -35,34 +34,40 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := DEMO
+BUILD_ARTIFACT_NAME := Bai6_ADC_PWM
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-DEMO.elf \
+Bai6_ADC_PWM.elf \
+
+MAP_FILES += \
+Bai6_ADC_PWM.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-DEMO.list \
+Bai6_ADC_PWM.list \
+
+OBJCOPY_HEX += \
+Bai6_ADC_PWM.hex \
 
 OBJCOPY_BIN += \
-DEMO.bin \
+Bai6_ADC_PWM.bin \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: DEMO.elf secondary-outputs
+main-build: Bai6_ADC_PWM.elf secondary-outputs
 
 # Tool invocations
-DEMO.elf: $(OBJS) $(USER_OBJS) C:\Users\ADMIN\Documents\05_2112692_2111882_2112912_2113050\ARM4\DEMO\DEMO\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "DEMO.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\ADMIN\Documents\05_2112692_2111882_2112912_2113050\ARM4\DEMO\DEMO\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="DEMO.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Bai6_ADC_PWM.elf Bai6_ADC_PWM.map: $(OBJS) $(USER_OBJS) D:\Documents\STM32CubeIDE\workspace_1.13.2\BKIT_ARM4_Bai6_ADC_PWM\Bai6_ADC_PWM\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Bai6_ADC_PWM.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Documents\STM32CubeIDE\workspace_1.13.2\BKIT_ARM4_Bai6_ADC_PWM\Bai6_ADC_PWM\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Bai6_ADC_PWM.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -71,22 +76,27 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-DEMO.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "DEMO.list"
+Bai6_ADC_PWM.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Bai6_ADC_PWM.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-DEMO.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "DEMO.bin"
+Bai6_ADC_PWM.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "Bai6_ADC_PWM.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+Bai6_ADC_PWM.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Bai6_ADC_PWM.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(SIZE_OUTPUT)$(OBJDUMP_LIST)$(EXECUTABLES)$(OBJS)$(S_DEPS)$(S_UPPER_DEPS)$(C_DEPS)$(OBJCOPY_BIN) DEMO.elf
+	-$(RM) Bai6_ADC_PWM.bin Bai6_ADC_PWM.elf Bai6_ADC_PWM.hex Bai6_ADC_PWM.list Bai6_ADC_PWM.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
@@ -95,6 +105,6 @@ fail-specified-linker-script-missing:
 warn-no-linker-script-specified:
 	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
 
-.PHONY: all clean dependents fail-specified-linker-script-missing warn-no-linker-script-specified
+.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified
 
 -include ../makefile.targets

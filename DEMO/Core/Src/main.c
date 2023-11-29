@@ -19,10 +19,24 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
+#include "dma.h"
+#include "i2c.h"
+#include "spi.h"
+#include "tim.h"
+#include "gpio.h"
+#include "fsmc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "software_timer.h"
+#include "led_7seg.h"
+#include "button.h"
+#include "lcd.h"
+#include "picture.h"
+#include "ds3231.h"
+#include "sensor.h"
+#include "buzzer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,6 +46,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,9 +62,12 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
-
+void system_init();
+void led7_Update();
+void button_Update();
+void adc_Display();
+void buzzer_On();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -85,16 +103,36 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_SPI1_Init();
+  MX_FSMC_Init();
+  MX_I2C1_Init();
+  MX_TIM13_Init();
+  MX_TIM2_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-
+  system_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  lcd_Clear(WHITE);
   while (1)
   {
-	  HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
-	  HAL_Delay(1000);
+	  if(flag_timer[LED7SEG_TIMER] == 1){
+		  setTimer(LED7SEG_PERIOD, LED7SEG_TIMER);
+		  led7_Scan();
+		  led7_SetColon(colon_status = !colon_status);
+	  }
+	  if(flag_timer[LCD_TIMER] == 1){
+		  setTimer(LCD_PERIOD, LCD_TIMER);
+		  led7_Update();
+		  adc_Display();
+	  }
+	  if((flag_timer[BUZZER_TIMER] == 1) && (Humidity > 70)){
+		  setTimer(BUZZER_PERIOD, BUZZER_TIMER);
+		  buzzer_On();
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -138,7 +176,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
@@ -146,61 +184,70 @@ void SystemClock_Config(void)
   }
 }
 
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, LED_DEBUG_Pin|OUTPUT_Y0_Pin|OUTPUT_Y1_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(INPUT_X1_GPIO_Port, INPUT_X1_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, INPUT_X2_Pin|INPUT_X3_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : LED_DEBUG_Pin OUTPUT_Y0_Pin OUTPUT_Y1_Pin */
-  GPIO_InitStruct.Pin = LED_DEBUG_Pin|OUTPUT_Y0_Pin|OUTPUT_Y1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : INPUT_X0_Pin */
-  GPIO_InitStruct.Pin = INPUT_X0_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(INPUT_X0_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : INPUT_X1_Pin */
-  GPIO_InitStruct.Pin = INPUT_X1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(INPUT_X1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : INPUT_X2_Pin INPUT_X3_Pin */
-  GPIO_InitStruct.Pin = INPUT_X2_Pin|INPUT_X3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
+/* USER CODE BEGIN 4 */
+void system_init(){
+	timer_init();
+	ds3231_init();
+	button_init();
+	lcd_init();
+	sensor_init();
+	buzzer_init();
+	led7_init();
+	setTimer(LCD_PERIOD, LCD_TIMER);
+	setTimer(LED7SEG_PERIOD, LED7SEG_TIMER);
+	setTimer(BUZZER_PERIOD, BUZZER_TIMER);
 }
 
-/* USER CODE BEGIN 4 */
+void led7_Update(){
+	ds3231_ReadTime();
+	led7_SetDigit(ds3231_hours/10, 0, 0);
+	led7_SetDigit(ds3231_hours%10, 1, 0);
+	led7_SetDigit(ds3231_min/10, 2, 0);
+	led7_SetDigit(ds3231_min%10, 3, 0);
+}
 
+void button_Update(){
+	button_Scan();
+	if(isButtonUp()){
+		current_duty_cycle = (current_duty_cycle + 1)%100;
+	}
+	if(isButtonDown()){
+		if(current_duty_cycle > 0){
+			current_duty_cycle = (current_duty_cycle - 1)%100;
+		}
+	}
+}
+
+void adc_Update(){
+	sensor_Read();
+	Power = sensor_GetCurrent()*sensor_GetVoltage();
+	Light = sensor_GetLight();
+	if(Light < 2048){
+		Light_intensity = "Weak";
+	}else{
+		Light_intensity = "Strong";
+	}
+	Humidity = (sensor_GetPotentiometer()/4095)*100;
+}
+
+void adc_Display(){
+	button_Update();
+	adc_Update();
+	lcd_ShowStr(10, 10, "Duty cycle (%):", RED, WHITE, 16, 0);
+	lcd_ShowIntNum(130, 10, current_duty_cycle, 2, RED, WHITE, 16);
+	lcd_ShowStr(10, 30, "Power (mW):", RED, WHITE, 16, 0);
+	lcd_ShowFloatNum(130, 30, Power, 4, RED, WHITE, 16);
+	lcd_ShowStr(10, 50, "Light:", RED, WHITE, 16, 0);
+	lcd_ShowStr(130, 50, Light_intensity, RED, WHITE, 16, 0);
+	lcd_ShowStr(10, 70, "Temperature (oC):", RED, WHITE, 16, 0);
+	lcd_ShowFloatNum(130, 70, sensor_GetTemperature(), 4, RED, WHITE, 16);
+	lcd_ShowStr(10, 90, "Humidity (%):", RED, WHITE, 16, 0);
+	lcd_ShowIntNum(130, 90, Humidity, 2, RED, WHITE, 16);
+}
+
+void buzzer_On(){
+	buzzer_SetVolume(current_duty_cycle);
+}
 /* USER CODE END 4 */
 
 /**
